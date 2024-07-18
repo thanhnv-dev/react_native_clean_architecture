@@ -1,79 +1,142 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# React native clean achitecture
 
-# Getting Started
+- [React native clean achitecture](#react-native-clean-achitecture)
+  - [1. Clean achitecture](#1-clean-achitecture)
+  - [2. Source Structure](#2-source-structure)
+  - [3. Diagram](#3-diagram)
+  - [4. Structure explanation](#4-structure-explanation)
+    - [1. Presentaion layer](#1-presentaion-layer)
+    - [2. Application layer](#2-application-layer)
+    - [3. Domain layer](#3-domain-layer)
+    - [4. Data layer](#4-data-layer)
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## 1. Clean achitecture
 
-## Step 1: Start the Metro Server
+Refer here => [Clean achitecture](https://quiver-blade-c45.notion.site/Clean-Architecture-feeff46260b94c58a013b6fc047cc0df#010e810803df4eb8b29ad1fa32cefa1e)
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## 2. Source Structure
 
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
+```jsx
+src/
+├── assets/
+│   ├── icons/
+│   ├── images/
+├── constants/
+│   ├── enum/
+├── core/
+│   ├── common/
+│   ├── components/
+│   ├── styles/
+├── features/
+│   ├── auth/
+│   │   ├── application/  // Application layer
+│   │   │   ├── LoginUseCase.ts
+│   │   ├── data/  // Data layer
+│   │   │   ├── repositories/
+│   │   │   │   ├── authRespositoriesImpl.ts
+│   │   │   ├── types/
+│   │   │   │   ├── ILoginResponse.ts
+│   │   ├── domain/  // Domain layer
+│   │   │   ├── repositories/
+│   │   │   │   ├── IAuthRepositories.ts
+│   │   │   ├── entities/
+│   │   │   │   ├── IUser.ts
+│   │   ├── presentation/  // Presentation layer
+│   │   │   ├── redux-slice/
+│   │   │   │   ├── auth.slice.ts
+│   │   │   │   ├── types.ts
+│   │   │   ├── screens/
+│   │   │   │   ├── SignInScreen.tsx
+├── navigation/
+│   ├── stacks/
+├── network/
+├── redux/
+│   ├── slice/
+│   ├── store.ts
+├── utils/
+├── main.tsx
 ```
 
-## Step 2: Start your Application
+## 3. Diagram
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+![MVVM](./clean_achitecture.png)
 
-### For Android
+## 4. Structure explanation
 
-```bash
-# using npm
-npm run android
+### 1. Presentaion layer
 
-# OR using Yarn
-yarn android
+```jsx
+├── presentation/  // Presentation layer
+│   ├── redux-slice/
+│   │   ├── auth.slice.ts
+│   │   ├── types.ts
+│   ├── screens/
+│   │   ├── SignInScreen.tsx
 ```
 
-### For iOS
+**Presentaion layer** bao gồm **redux-slice** **screens** và **components**
 
-```bash
-# using npm
-npm run ios
+**Screens**
+Chứa các màn hình.
+Không xử lý logic trong screen.
 
-# OR using Yarn
-yarn ios
+**Redux-slice**
+Có thể là một _redux slice_ cho cả feature, hoặc các _redux slice_ cho các màn hình có state hoặc phần xử lý phức tạp.
+_Redux slice_ chứa _state_, các phần xử lý logic và call api.
+Chuyển hết các _state_ sang _redux slice_ nếu có thể.
+File type là nơi khai báo type _state_ của _redux slice_, type đầu vào của các _func_ trong _redux slice_.
+
+**Components**
+Chứa các components dùng chung của feature ở ví dụ trên là các components chỉ đươc dùng chung tại feature auth.
+Các components dùng chung trên toàn app sẽ nằm ở folder **core/components**
+
+### 2. Application layer
+
+```jsx
+├── application/  // Application layer
+│   ├── LoginUseCase.ts
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+**Application layer** bao gồm các **use cases**, lớp này có thể là optional.
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+**Usecases**
+Đây là các lớp hoặc chức năng chính của ứng dụng, thực hiện các nghiệp vụ cụ thể. Các Use Cases không nên biết bất kỳ chi tiết cụ thể nào về giao diện người dùng hay các nền tảng cụ thể. Chúng chỉ nên tập trung vào việc xử lý business logic và sử dụng các entities.
+Ví dụ như trong LoginUseCase sẽ hàm login của repositores của Data layer và trả về User entity nếu thành công.
 
-## Step 3: Modifying your App
+### 3. Domain layer
 
-Now that you have successfully run the app, let's modify it.
+```jsx
+├── domain/  // Domain layer
+│   ├── repositories/
+│   │   ├── IAuthRepositories.ts
+│   ├── entities/
+│   │   ├── IUser.ts
+```
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+**Domain layer** bao gồm **repositories** và **types**
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+**Repositories**
+là các interface đại diện cho việc truy xuất dữ liệu từ các nguồn khác nhau như cơ sở dữ liệu, API, bộ nhớ cache, v.v. Chúng cung cấp một cách tiếp cận trừu tượng đối với dữ liệu để các Use Cases có thể tương tác với dữ liệu mà không phụ thuộc vào cụ thể của từng nguồn dữ liệu.
+Là một interface định nghĩa các func chức năng như login, dạng tham số đầu vào và dạng dữ liệu trả về của chức năng.
 
-## Congratulations! :tada:
+**Entities**
+Có thể là type hoặc interface chính là entities trong _Clean Achitecture_. Ở auth feature thì nó chính là type hoặc interface của User.
 
-You've successfully run and modified your React Native App. :partying_face:
+### 4. Data layer
 
-### Now what?
+```jsx
+├── data/  // Data layer
+│   ├── repositories/
+│   │   ├── authRespositoriesImpl.ts
+│   ├── types/
+│   │   ├── ILoginResponse.ts
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+**Data layer** bao gồm **repositories** và **types**
 
-# Troubleshooting
+**Repositories**
+Là một class implements repositories interface của Domain layer chứa các func chức năng để làm việc với các nguồn khác nhau như cơ sở dữ liệu, API, bộ nhớ cache, v.v.
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+**Types**
+Có thể là type hoặc interface định nghĩa các kiểu dữ liệu đươc phía BE hay local storage trả về.
+Ở ví dụ về auth feature thì là một interface khai báo kiểu dữ liệu trả về từ BE tại api login.

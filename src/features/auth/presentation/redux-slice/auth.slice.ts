@@ -7,12 +7,7 @@ import {
 import {LoginUseCase} from 'features/auth/application/LoginUseCase';
 import AuthRespositoriesImpl from 'features/auth/data/repositories/authRespositoriesImpl';
 import {RootState} from 'redux/store';
-import {AuthSliceState} from './types';
-
-type LoginActionProps = {
-    email: string;
-    password: string;
-};
+import {AuthSliceState, LoginActionProps} from './types';
 
 export const loginAction: any = createAsyncThunk(
     'auth/login',

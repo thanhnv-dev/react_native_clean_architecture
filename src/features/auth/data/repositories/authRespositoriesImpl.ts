@@ -1,10 +1,10 @@
-import AuthRespositories from 'features/auth/domain/repositories/authRepositories';
 import {sendPost} from 'network/requests';
 import {ILoginResponse, ILoginResponseResults} from '../types/ILoginResponse';
-import IUser from 'features/auth/domain/types/IUser';
+import IUser from 'features/auth/domain/entities/IUser';
 import helper from 'utils/helper';
+import IAuthRespositories from 'features/auth/domain/repositories/IAuthRepositories';
 
-class AuthRespositoriesImpl implements AuthRespositories {
+class AuthRespositoriesImpl implements IAuthRespositories {
     async login(email: string, password: string): Promise<IUser | null> {
         const loginRes = await sendPost<ILoginResponse>('/user/sign-in', {
             email,

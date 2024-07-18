@@ -1,10 +1,10 @@
-import IUser from 'features/auth/domain/types/IUser';
-import AuthRespositories from 'features/auth/domain/repositories/authRepositories';
+import IUser from 'features/auth/domain/entities/IUser';
+import IAuthRespositories from 'features/auth/domain/repositories/IAuthRepositories';
 
 export class LoginUseCase {
-    private authRespositories: AuthRespositories;
+    private authRespositories: IAuthRespositories;
 
-    constructor(authRespositories: AuthRespositories) {
+    constructor(authRespositories: IAuthRespositories) {
         this.authRespositories = authRespositories;
     }
 
